@@ -116,7 +116,6 @@ export default function SitesTable() {
         </Table>
       </TableContainer>
 
-      {/* Dialog עריכה */}
       <Dialog open={!!editingSite} onClose={() => setEditingSite(null)}>
         <DialogTitle>Edit Site</DialogTitle>
         <DialogContent>
@@ -134,7 +133,6 @@ export default function SitesTable() {
         </DialogContent>
       </Dialog>
 
-      {/* Dialog הוספה */}
       <Dialog open={isAdding} onClose={() => setIsAdding(false)}>
         <DialogTitle>Add New Site</DialogTitle>
         <DialogContent>
