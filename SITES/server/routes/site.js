@@ -3,8 +3,23 @@ const { SiteModel, validateSite } = require("../models/siteModel");
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-  let data = await SiteModel.find({});
-  res.json(data);
+  let perPage = Math.min(req.query.perPage, 20) ||4;
+  let page = req.query.page || 1;
+  let sort = req.query.sort || "_id";
+  let reverse = req.query.reverse == "yes" ? -1 : 1;
+  try{
+    const count = await SiteModel.countDocuments({});
+    let data = await SiteModel
+    .find({})
+    .limit(perPage)
+    .skip((page -1)* perPage)
+    .sort({[sort]: reverse});
+    res.json({data,count});
+  }
+  catch(err){
+    console.log(err);
+    res.status(500).json({msg:"err", err});    
+  }
 });
 
 router.get("/:id", async (req, res) => {

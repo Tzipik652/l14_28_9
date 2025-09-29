@@ -2,11 +2,15 @@ import axios from "axios";
 
 const SITES_BASE_URL = "http://localhost:3000/sites";
 
-export const getSites = async () => {
+export const getSites = async (
+  page = 1,
+  perPage = 5,
+  sort = "_id",
+  reverse = "no"
+) => {
   try {
-    const response = await axios.get(`${SITES_BASE_URL}`);
-    const results = response.data;
-    return results;
+    const response = await axios.get(`${SITES_BASE_URL}?perPage=${perPage}&page=${page}&sort=${sort}&reverse=${reverse}`);
+    return response.data;
   } catch (error) {
     console.error("Error fetching sites", error);
     throw error;
@@ -16,8 +20,7 @@ export const getSites = async () => {
 export const getSiteById = async (_id: any) => {
   try {
     const response = await axios.get(`${SITES_BASE_URL}/${_id}`);
-    const results = response.data;
-    return results;
+    return response.data;
   } catch (error) {
     console.error("Error fetching site", error);
     throw error;

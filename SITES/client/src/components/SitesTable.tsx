@@ -27,14 +27,23 @@ export default function SitesTable() {
   const [sites, setSites] = useState<Site[]>([]);
   const [editingSite, setEditingSite] = useState<Site | null>(null);
   const [isAdding, setIsAdding] = useState(false);
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(5);
+  const [sort, setSort] = useState("_id");
+  const [reverse, setReverse] = useState("no");
+  const [count, setCount] = useState(0);
+  const totalPages = Math.ceil(count / perPage);
+  const hasNext = page < totalPages;
+  const hasPrev = page > 1;
 
   useEffect(() => {
     loadSites();
-  }, []);
+  }, [page, perPage, sort, reverse]);
 
   const loadSites = async () => {
-    const data = await getSites();
-    setSites(data);
+    const result = await getSites(page, perPage, sort, reverse);
+    setSites(result.data);
+    setCount(result.count);
   };
 
   const handleDelete = async (id: string) => {
@@ -84,7 +93,12 @@ export default function SitesTable() {
             {sites.map((site) => (
               <TableRow key={site._id}>
                 <TableCell>
-                  <img src={site.image} alt={site.name} width={24} height={24} />
+                  <img
+                    src={site.image}
+                    alt={site.name}
+                    width={24}
+                    height={24}
+                  />
                 </TableCell>
                 <TableCell>
                   <a href={site.url} target="_blank" rel="noopener noreferrer">
@@ -115,6 +129,24 @@ export default function SitesTable() {
           </TableBody>
         </Table>
       </TableContainer>
+      <Button
+        disabled={!hasPrev}
+        onClick={() => setPage((p) => Math.max(1, p - 1))}
+      >
+        Prev
+      </Button>
+
+      <span>
+        Page {page} of {totalPages}
+      </span>
+
+      <Button disabled={!hasNext} onClick={() => setPage((p) => p + 1)}>
+        Next
+      </Button>
+
+      <Button onClick={() => setReverse(reverse === "yes" ? "no" : "yes")}>
+        Toggle Sort
+      </Button>
 
       <Dialog open={!!editingSite} onClose={() => setEditingSite(null)}>
         <DialogTitle>Edit Site</DialogTitle>
