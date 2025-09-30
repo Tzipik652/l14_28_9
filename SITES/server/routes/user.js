@@ -1,7 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 
-const { auth } = require("../middlewares/auth");
+const { auth, authAdmin } = require("../middlewares/auth");
 
 const jwt = require("jsonwebtoken");
 const { validUser, UserModel, validLogin, createToken } = require("../models/userModel");
@@ -48,7 +48,7 @@ router.post("/login", async (req, res) => {
     if(!authPassword){
       return res.status(401).json({msg:"Password or email is worng.,code:2"});
     }
-    let newToken = createToken(user._id);
+    let newToken = createToken(user._id,user.role);
     res.json({token:newToken});
 
   } catch (err) {
@@ -68,6 +68,15 @@ router.get("/myEmail",auth, async (req, res) => {
 router.get("/myInfo",auth, async (req, res) => {
   try{
     let user = await UserModel.findOne({_id:req.tokenData._id},{password:0})
+    res.json(user);
+  }catch(err){
+    console.log(err);
+    res.status(500).json({ msg: "err", err });
+  }
+});
+router.get("/usersList",authAdmin, async (req, res) => {
+  try{
+    let user = await UserModel.find({},{password:0})
     res.json(user);
   }catch(err){
     console.log(err);
